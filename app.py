@@ -69,7 +69,7 @@ def chain_prompts(docs, prospect):
                 "company_information": company_information,
                 "sales_rep": "Jo",
                 "prospect" : prospect,
-                "example_email" : example_email
+                "example_email" : example_email,
                })
 
 st.set_page_config(page_title="AmpControl Sales Mail Generatorl", page_icon=":robot:")
