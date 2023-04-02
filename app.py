@@ -69,11 +69,20 @@ def chain_prompts(docs, prospect):
 st.set_page_config(page_title="AmpControl Sales Mail Generatorl", page_icon=":robot:")
 st.header("AmpControl Sales Mail Generator")
 
-st.text_area(value=company_information, label="AmpControl Value Proposition", placeholder="Enter the value proposition of AmpControl")
+#st.text_area(value=company_information, label="AmpControl Value Proposition", placeholder="Enter the value proposition of AmpControl")
+#st.text_area(value=company_information, label="Example Email", placeholder="Enter an example email")
+
 company_name = st.text_input(label="", placeholder="Prospect Name")
-company_url_1 = st.text_input(label="", placeholder="Prospect URL 1")
-company_url_2 = st.text_input(label="", placeholder="Prospect URL 2")
-company_url_3 = st.text_input(label="", placeholder="Prospect URL 3")
+col1, col2, col3 = st.columns(3)
+
+with col1:
+   company_url_1 = st.text_input(label="", placeholder="Prospect URL 1")
+
+with col2:
+    company_url_2 = st.text_input(label="", placeholder="Prospect URL 2")
+
+with col3:
+    company_url_3 = st.text_input(label="", placeholder="Prospect URL 3")
 
 if st.button('Generate email'):
     with st.spinner('Loading...'):
