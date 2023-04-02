@@ -1,4 +1,5 @@
-﻿langchain
+langchain
 openai
 streamlit
 tiktoken
+unstructured
