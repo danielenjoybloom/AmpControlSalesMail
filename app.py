@@ -11,6 +11,8 @@ company_information = """* Optimize your Electric Vehicle Operations: Reduce ene
 * Optimize Energy Usage: Avoid high operation costs
 """
 
+example_email = ""
+
 map_prompt = """Below is a section of a website about {prospect}
 What is some interesting information and news about electric fleets about {prospect}. If the information is not about {prospect}, exclude it from your summary.
 {text}
@@ -33,11 +35,14 @@ INCLUDE THE FOLLOWING PIECE IN YOUR RESPONSE:
 - The sentence: "We can help you do XYZ by ABC" Replace XYZ with what {prospect} does and ABC with what {company} does
 - End your email with a call-to-action such as asking them to set up time to talk more
 
+EXAMPLE EMAIL:
+{example_email}
+
 YOUR RESPONSE:
 
 """
 
-combine_prompt_template = PromptTemplate(template=combine_prompt, input_variables=["sales_rep", "company", "prospect", "text", "company_information"])
+combine_prompt_template = PromptTemplate(template=combine_prompt, input_variables=["sales_rep", "company", "prospect", "text", "company_information", "example_email"])
 
 def get_company_page(link1, link2, link3):
     loader = UnstructuredURLLoader(urls=[link1, link2, link3])
@@ -63,20 +68,19 @@ def chain_prompts(docs, prospect):
                 "company" : "AmpControl",
                 "company_information": company_information,
                 "sales_rep": "Jo",
-                "prospect" : prospect
+                "prospect" : prospect,
+                "example_email" : example_email
                })
 
 st.set_page_config(page_title="AmpControl Sales Mail Generatorl", page_icon=":robot:")
 st.header("AmpControl Sales Mail Generator")
 
-#st.text_area(value=company_information, label="AmpControl Value Proposition", placeholder="Enter the value proposition of AmpControl")
-#st.text_area(value=company_information, label="Example Email", placeholder="Enter an example email")
-
 company_name = st.text_input(label="", placeholder="Prospect Name")
+
 col1, col2, col3 = st.columns(3)
 
 with col1:
-   company_url_1 = st.text_input(label="", placeholder="Prospect URL 1")
+   company_url_1 = st.text_input(label= "", placeholder="Prospect URL 1")
 
 with col2:
     company_url_2 = st.text_input(label="", placeholder="Prospect URL 2")
@@ -84,12 +88,20 @@ with col2:
 with col3:
     company_url_3 = st.text_input(label="", placeholder="Prospect URL 3")
 
-if st.button('Generate email'):
-    with st.spinner('Loading...'):
-        data = get_company_page(link1=company_url_1, link2=company_url_2, link3=company_url_3)
-        docs = split_documents(data)
-        output = chain_prompts(docs, company_name)
-        mail = output['output_text']
-        st.write(mail)
+with st.expander("Advanced Settings"):
+    company_information = st.text_area(value=company_information, label="AmpControl Value Proposition", placeholder="Enter the value proposition of AmpControl")
+    example_email = st.text_area(value="", label="Example Email", placeholder="Enter an example email")
+
+if st.button('Generate email', type = 'primary'):
+    if company_url_1 == "" or company_url_2 == "" or company_url_3 == "" or company_name == "":
+        st.session_state.company_url_1_label = "🚨"
+        st.error('Please fill out the required fields', icon="🚨")
+    else:
+        with st.spinner('Loading...'):
+            data = get_company_page(link1=company_url_1, link2=company_url_2, link3=company_url_3)
+            docs = split_documents(data)
+            output = chain_prompts(docs, company_name)
+            mail = output['output_text']
+            st.write(mail)
 
     
