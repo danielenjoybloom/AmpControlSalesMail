@@ -7,6 +7,8 @@ import tiktoken
 import os
 import streamlit as st
 
+os.environ["OPENAI_API_KEY"] = "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"
+
 company_information = """* Optimize your Electric Vehicle Operations: Reduce energy costs, avoid late departures, and ensure reliable charging operations
 * Optimize Energy Usage: Avoid high operation costs
 """
@@ -31,9 +33,9 @@ INFORMATION ABOUT {prospect}:
 {text}
 
 INCLUDE THE FOLLOWING PIECE IN YOUR RESPONSE:
-- Start the email with the sentence: "We love that {prospect}..." then insert something specific about the electric fleet information provided.
-- The sentence: "We can help you do XYZ by ABC" Replace XYZ with what {prospect} does and ABC with what {company} does
-- End your email with a call-to-action such as asking them to set up time to talk more
+- First Sentenvce: "We love that {prospect}..." then insert something specific about the electric fleet information provided.
+- Second Sentence: "We can help you do XYZ by ABC" Replace XYZ with what {prospect} does and ABC with what {company} does
+- Third Sentence End your email with a call-to-action such as asking them to set up time to talk more
 
 EXAMPLE EMAIL:
 {example_email}
@@ -83,25 +85,31 @@ with col1:
    company_url_1 = st.text_input(label= "", placeholder="Prospect URL 1")
 
 with col2:
-    company_url_2 = st.text_input(label="", placeholder="Prospect URL 2")
+    company_url_2 = st.text_input(label="", placeholder="Prospect URL 2 (Optional)")
 
 with col3:
-    company_url_3 = st.text_input(label="", placeholder="Prospect URL 3")
+    company_url_3 = st.text_input(label="", placeholder="Prospect URL 3 (Optional)")
 
 with st.expander("Advanced Settings"):
     company_information = st.text_area(value=company_information, label="AmpControl Value Proposition", placeholder="Enter the value proposition of AmpControl")
     example_email = st.text_area(value="", label="Example Email", placeholder="Enter an example email")
 
 if st.button('Generate email', type = 'primary'):
-    if company_url_1 == "" or company_url_2 == "" or company_url_3 == "" or company_name == "":
+    if company_name == "":
+        st.error('Please add a prospect name', icon="🚨")
+    if company_url_1 == "" and company_url_2 == "" and company_url_3 == "" and company_name == "":
         st.session_state.company_url_1_label = "🚨"
-        st.error('Please fill out the required fields', icon="🚨")
-    else:
-        with st.spinner('Loading...'):
-            data = get_company_page(link1=company_url_1, link2=company_url_2, link3=company_url_3)
-            docs = split_documents(data)
-            output = chain_prompts(docs, company_name)
-            mail = output['output_text']
-            st.write(mail)
+        st.error('Please add at least 1 URL', icon="🚨")
+    if company_url_1 != "" and company_url_2 == "":
+        company_url_2 = company_url_1
+    if company_url_1 != "" and company_url_3 == "":
+        company_url_3 = company_url_1
+        
+    with st.spinner('Loading...'):
+        data = get_company_page(link1=company_url_1, link2=company_url_2, link3=company_url_3)
+        docs = split_documents(data)
+        output = chain_prompts(docs, company_name)
+        mail = output['output_text']
+        st.write(mail)
 
     
