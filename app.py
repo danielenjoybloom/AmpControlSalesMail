@@ -3,11 +3,10 @@ from langchain.chains.summarize import load_summarize_chain
 from langchain.llms import OpenAI
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain.prompts import PromptTemplate
+from langchain.chains import LLMChain
 import tiktoken
 import os
 import streamlit as st
-
-os.environ["OPENAI_API_KEY"] = "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"
 
 company_information = """* Optimize your Electric Vehicle Operations: Reduce energy costs, avoid late departures, and ensure reliable charging operations
 * Optimize Energy Usage: Avoid high operation costs
